@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        options:
+          # Tells Freezed not to format .freezed.dart files.
+          format: false
