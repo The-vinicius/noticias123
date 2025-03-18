@@ -8,7 +8,7 @@ import 'package:noticias123/src/auth/domian/models/user/user.dart';
 import 'package:result_dart/result_dart.dart';
 
 class AuthRepositoryRemote implements AuthRepository {
-  final SupabeUser _supabeUser;
+  final SupabaseUser _supabeUser;
   final _streamController = StreamController<User>();
   AuthRepositoryRemote(this._supabeUser);
 
