@@ -2,8 +2,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:noticias123/src/auth/data/repositories/auth_repository.dart';
 import 'package:noticias123/src/auth/data/repositories/auth_repository_remote.dart';
 import 'package:noticias123/src/auth/ui/auth_page.dart';
-import 'package:noticias123/src/auth/ui/viewmodels/login_viewmodel.dart';
 import 'package:noticias123/src/auth/data/services/supabe_user.dart';
+import 'package:noticias123/src/auth/ui/view_models/login_viewmodel.dart';
 
 class AuthModule extends Module {
   @override
