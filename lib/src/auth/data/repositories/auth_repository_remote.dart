@@ -9,8 +9,9 @@ import 'package:result_dart/result_dart.dart';
 
 class AuthRepositoryRemote implements AuthRepository {
   final SupabaseUser _supabeUser;
+  final GoogleAuth _googleAuth;
   final _streamController = StreamController<User>();
-  AuthRepositoryRemote(this._supabeUser);
+  AuthRepositoryRemote(this._supabeUser, this._googleAuth);
 
   @override
   void getUser() {
@@ -41,7 +42,7 @@ class AuthRepositoryRemote implements AuthRepository {
   @override
   AsyncResult<User, Exception> signIn() async {
     try {
-      final user = await signInWithGoogle();
+      final user = await _googleAuth.signInWithGoogle();
       return Success(user);
     } catch (e) {
       return Failure(Exception(e.toString()));

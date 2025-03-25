@@ -3,34 +3,55 @@ import 'package:noticias123/src/app_config.dart';
 import 'package:noticias123/src/auth/domian/models/user/user.dart' as AuthUser;
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
-Future<AuthUser.User> signInWithGoogle() async {
-  final GoogleSignIn googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-    clientId: const String.fromEnvironment('clientId'),
-  );
+class GoogleAuthException implements Exception {
+  final String message;
+  GoogleAuthException(this.message);
+  @override
+  String toString() => message;
+}
 
-  final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-  final GoogleSignInAuthentication googleAuth =
-      await googleUser!.authentication;
+class GoogleAuth {
+  final GoogleSignIn googleSignIn;
+  GoogleAuth(this.googleSignIn);
+  Future<AuthUser.User> signInWithGoogle() async {
+    final googleUser = await googleSignIn.signIn();
 
-  final accessToken = googleAuth.accessToken;
-  final idToken = googleAuth.idToken;
+    if (googleUser == null) {
+      throw GoogleAuthException('Sign-in cancelled by user.');
+    }
 
-  if (accessToken == null || idToken == null) {
-    throw 'Erro ao autenticar com o Google';
+    final googleAuth = await googleUser.authentication;
+    final accessToken = googleAuth.accessToken;
+    final idToken = googleAuth.idToken;
+
+    if (accessToken == null || idToken == null) {
+      throw GoogleAuthException(
+          'Failed to obtain Google authentication tokens.');
+    }
+
+    final user = await _authenticateWithSupabase(accessToken, idToken);
+    return user;
   }
+}
 
-  // Autentique no Supabase usando o token
+Future<AuthUser.User> _authenticateWithSupabase(
+    String accessToken, String idToken) async {
   await supabase.auth.signInWithIdToken(
     provider: OAuthProvider.google,
     idToken: idToken,
     accessToken: accessToken,
   );
 
+  final supabaseUser = supabase.auth.currentUser;
+  if (supabaseUser == null) {
+    throw GoogleAuthException('Failed to authenticate with Supabase.');
+  }
+
   return AuthUser.User(
-      uid: supabase.auth.currentUser!.id,
-      email: supabase.auth.currentUser!.email!,
-      name: supabase.auth.currentUser!.userMetadata!['full_name'],
-      avatarUrl: supabase.auth.currentUser!.userMetadata!['avatar_url'],
-      bio: '');
+    uid: supabaseUser.id,
+    email: supabaseUser.email!,
+    name: supabaseUser.userMetadata!['full_name'],
+    avatarUrl: supabaseUser.userMetadata!['avatar_url'],
+    bio: '',
+  );
 }
