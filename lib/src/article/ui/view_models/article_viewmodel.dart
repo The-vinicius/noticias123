@@ -9,6 +9,10 @@ class ArticleViewModel extends ChangeNotifier {
   List<Article> _articles = [];
   List<Article> get articles => _articles;
   bool _success = false;
+  String _message = '';
+  bool _noData = false;
+  bool get noData => _noData;
+  String get message => _message;
   bool _error = false;
   bool _loading = false;
   bool get loading => _loading;
@@ -20,10 +24,12 @@ class ArticleViewModel extends ChangeNotifier {
     result.fold(
       (ar) {
         _articles = ar;
+        _noData = _articles.isEmpty;
         notifyListeners();
       },
       (f) {
         _error = true;
+        _message = f.toString();
         notifyListeners();
       },
     );
@@ -39,6 +45,7 @@ class ArticleViewModel extends ChangeNotifier {
       },
       (f) {
         _error = true;
+        _message = f.toString();
         notifyListeners();
       },
     );

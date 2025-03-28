@@ -31,6 +31,16 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
               child: CircularProgressIndicator(),
             );
           }
+          if (widget.articleViewModel.error) {
+            return Center(
+              child: Text(widget.articleViewModel.message),
+            );
+          }
+          if (widget.articleViewModel.noData) {
+            return const Center(
+              child: Text('No articles found'),
+            );
+          }
           return ListView.builder(
             itemCount: widget.articleViewModel.articles.length,
             itemBuilder: (ctx, index) {
@@ -92,7 +102,7 @@ class _ArticleCard extends StatelessWidget {
                     children: [
                       Chip(
                         label: Text(article.category),
-                        backgroundColor: Colors.blue,
+                        backgroundColor: const Color.fromRGBO(230, 230, 250, 1),
                       ),
                       const Spacer(),
                       Text(
