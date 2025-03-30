@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:noticias123/src/article/domian/models/article.dart';
@@ -27,8 +28,8 @@ class ArticleDetailPage extends StatelessWidget {
             if (article.thumbnailUrl.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  article.thumbnailUrl,
+                child: CachedNetworkImage(
+                  imageUrl: article.thumbnailUrl,
                   width: double.infinity,
                   fit: BoxFit.fill,
                 ),
