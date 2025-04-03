@@ -1,20 +1,24 @@
+import 'dart:io';
 import 'package:noticias123/src/article/data/exceptions/exceptions.dart';
 import 'package:noticias123/src/article/domian/models/article.dart';
 import 'package:result_dart/result_dart.dart';
 
 abstract class ArticleRepository {
   // Busca
-  AsyncResult<List<Article>, ArticleException> getArticles(int page, int limit);
-  AsyncResult<Article, ArticleException> getArticleById(String id);
+  AsyncResult<List<ArticleDone>, ArticleException> getArticles(
+      int page, int limit);
+  AsyncResult<ArticleDone, ArticleException> getArticleById(String id);
+  AsyncResult<List<ArticleDone>, ArticleException> getArticleByAuthorId(
+      String id);
 
   // Filtros
-  AsyncResult<List<Article>, ArticleException> searchArticles(String query);
-  AsyncResult<List<Article>, ArticleException> getArticlesByCategory(
+  AsyncResult<List<ArticleDone>, ArticleException> searchArticles(String query);
+  AsyncResult<List<ArticleDone>, ArticleException> getArticlesByCategory(
       String category);
 
   // Persistência
-  AsyncResult<Unit, ArticleException> saveArticle(Article article);
-  AsyncResult<Unit, ArticleException> deleteArticle(String id);
+  AsyncResult<Unit, ArticleException> saveArticle(Article article, File image);
+  AsyncResult<Unit, ArticleException> deleteArticle(int id);
   AsyncResult<List<Article>, ArticleException> getSavedArticles();
 
   // Atualizações em Tempo Real
