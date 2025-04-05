@@ -1,7 +1,9 @@
 import 'package:noticias123/src/app_config.dart';
+import 'package:noticias123/src/auth/data/services/user_service.dart';
 import 'package:noticias123/src/auth/domian/models/user/user.dart';
 
-class SupabaseUser {
+class SupabaseUser implements UserService {
+  @override
   User getUser() {
     final user = User(
       uid: supabase.auth.currentUser?.id ?? '',
