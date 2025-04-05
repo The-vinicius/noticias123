@@ -21,8 +21,10 @@ class HomeModule extends Module {
       children: [
         ChildRoute(
           '/profile/',
-          child: (_) =>
-              ProfileScreen(authRepository: Modular.get<AuthRepository>()),
+          child: (_) => ProfileScreen(
+            authRepository: Modular.get<AuthRepository>(),
+            articleViewModel: Modular.get<ArticleViewModel>(),
+          ),
         ),
         ChildRoute('/articles/',
             child: (_) => ArticlesScreen(
