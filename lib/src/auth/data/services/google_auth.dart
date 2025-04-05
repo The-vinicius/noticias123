@@ -1,5 +1,6 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:noticias123/src/app_config.dart';
+import 'package:noticias123/src/auth/data/services/auth_service.dart';
 import 'package:noticias123/src/auth/domian/models/user/user.dart' as AuthUser;
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
@@ -10,9 +11,11 @@ class GoogleAuthException implements Exception {
   String toString() => message;
 }
 
-class GoogleAuth {
+class GoogleAuth implements AuthService {
   final GoogleSignIn googleSignIn;
   GoogleAuth(this.googleSignIn);
+
+  @override
   Future<AuthUser.User> signInWithGoogle() async {
     final googleUser = await googleSignIn.signIn();
 
