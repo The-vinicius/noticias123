@@ -19,24 +19,34 @@ class _HomeScreenState extends State<HomeScreen> {
   final _screens = [
     ArticlesScreen(articleViewModel: Modular.get<ArticleViewModel>()),
     const FormScreen(),
-    ProfileScreen(authRepository: Modular.get<AuthRepository>())
+    ProfileScreen(
+        authRepository: Modular.get<AuthRepository>(),
+        articleViewModel: Modular.get<ArticleViewModel>())
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notícias123')),
+      // if currentIndex iqual 1, hide the appBar
+      appBar: _currentIndex == 1
+          ? null
+          : AppBar(
+              title: const Text('Notícias 123'),
+            ),
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedFontSize: 10,
+        unselectedFontSize: 10,
+        showSelectedLabels: true,
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Artigos'),
+          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Notícias'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline), label: 'Formulário'),
+              icon: Icon(Icons.add_circle_outline), label: 'Publicar'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),
