@@ -9,8 +9,8 @@ class ArticleViewModel extends ChangeNotifier {
   final ArticleRepository _articleRepository;
   ArticleViewModel(this._articleRepository);
 
-  List<Article> _articles = [];
-  List<Article> get articles => _articles;
+  List<ArticleDone> _articles = [];
+  List<ArticleDone> get articles => _articles;
   String _message = '';
   bool _noData = false;
   bool get noData => _noData;
@@ -36,5 +36,16 @@ class ArticleViewModel extends ChangeNotifier {
       },
     );
     _loading = false;
+  }
+
+  Future<void> deleteArticle(int id) async {
+    final result = await _articleRepository.deleteArticle(id);
+    result.fold((s) {
+      articles.removeWhere((article) => article.id == id);
+      notifyListeners();
+    }, (f) {
+      _message = f.toString();
+      notifyListeners();
+    });
   }
 }
