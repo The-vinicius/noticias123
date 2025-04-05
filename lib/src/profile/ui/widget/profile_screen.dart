@@ -1,12 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:noticias123/src/article/ui/view_models/article_viewmodel.dart';
 import 'package:noticias123/src/auth/data/repositories/auth_repository.dart';
 import 'package:noticias123/src/auth/domian/models/user/user.dart';
 
 class ProfileScreen extends StatefulWidget {
   final AuthRepository authRepository;
+  final ArticleViewModel articleViewModel;
 
-  const ProfileScreen({super.key, required this.authRepository});
+  const ProfileScreen(
+      {super.key,
+      required this.authRepository,
+      required this.articleViewModel});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -17,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     widget.authRepository.getUser();
+    widget.articleViewModel.getArticles();
   }
 
   @override
@@ -27,26 +33,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: StreamBuilder<User>(
-          stream: widget.authRepository.observerUser,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final user = snapshot.data!;
-              return Column(
-                children: [
-                  _buildProfileHeader(user),
-                  const SizedBox(height: 24),
-                  _buildProfileDetails(user),
-                ],
-              );
-            }
-            return const Center(
-              child: Text('Sem dados'),
+    return StreamBuilder<User>(
+        stream: widget.authRepository.observerUser,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final user = snapshot.data!;
+            return Column(
+              children: [
+                _buildProfileHeader(user),
+                const SizedBox(height: 24),
+                _buildProfileDetails(user),
+                _buildArticles(),
+              ],
             );
-          }),
-    );
+          }
+          return const Center(
+            child: Text('Sem dados'),
+          );
+        });
   }
 
   Widget _buildProfileHeader(User user) {
@@ -146,5 +150,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildArticles() {
+    return ListenableBuilder(
+        listenable: widget.articleViewModel,
+        builder: (context, child) {
+          if (widget.articleViewModel.loading) {
+            return const CircularProgressIndicator();
+          } else if (widget.articleViewModel.articles.isEmpty) {
+            return const Text('sem dados');
+          }
+          return Expanded(
+            child: ListView.builder(
+                itemCount: widget.articleViewModel.articles.length,
+                itemBuilder: (ctx, index) {
+                  final article = widget.articleViewModel.articles[index];
+                  return ListTile(
+                    style: ListTileStyle.list,
+                    trailing:
+                        CachedNetworkImage(imageUrl: article.thumbnailUrl),
+                    onLongPress: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('delatar ${article.title}'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text('Não')),
+                                TextButton(
+                                    onPressed: () async {
+                                      await widget.articleViewModel
+                                          .deleteArticle(article.id);
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Sim')),
+                              ],
+                            );
+                          });
+                    },
+                    title: Text(
+                      article.title,
+                    ),
+                    // titleTextStyle: TextStyle(fontSize: 20),
+                    subtitle: Text(
+                      maxLines: 2,
+                      article.content,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }),
+          );
+        });
   }
 }
